@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Scoring Results</title>
+    <!-- Include Pico CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1.5.10/css/pico.min.css">
+    <style>
+        /* Make the table more readable */
+        table {
+            font-size: 0.9rem;
+        }
+        th, td {
+            text-align: center;
+        }
+        /* Caterpillar yellow accent */
+        [data-theme="light"],
+        :root:not([data-theme="dark"]) {
+          --primary: #fdd835;
+          --primary-hover: #fbc02d;
+          --primary-focus: rgba(253, 216, 53, 0.125);
+          --primary-inverse: rgba(0, 0, 0, 0.75);
+        }
+        @media only screen and (prefers-color-scheme: dark) {
+          :root:not([data-theme]) {
+            --primary: #fdd835;
+            --primary-hover: #ffeb3b;
+            --primary-focus: rgba(253, 216, 53, 0.25);
+            --primary-inverse: rgba(0, 0, 0, 0.75);
+          }
+        }
+        [data-theme="dark"] {
+          --primary: #fdd835;
+          --primary-hover: #ffeb3b;
+          --primary-focus: rgba(253, 216, 53, 0.25);
+          --primary-inverse: rgba(0, 0, 0, 0.75);
+        }
+        :root {
+          --form-element-active-border-color: var(--primary);
+          --form-element-focus-color: var(--primary-focus);
+          --switch-color: var(--primary-inverse);
+          --switch-checked-background-color: var(--primary);
+        }
+        /* Row transitions */
+        .contest-row {
+          transition: opacity 0.3s ease, max-height 0.3s ease, grid-template-columns 0.3s ease;
+          overflow: hidden;
+        }
+        .contest-row.hidden {
+          opacity: 0;
+          max-height: 0;
+          padding: 0;
+          margin: 0;
+        }
+        /* Results styling */
+        #results {
+          margin-top: 1rem;
+        }
+        nav a {
+          font-weight: bold;
+          font-size: 1.25rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="container">
+      <ul>
+        <li><a href="/results">Results: Skills USA</a></li>
+      </ul>
+    </nav>
+    <main class="container">
+        <h1>Scoring Results</h1>
+
+        <a href="{{ url_for('index') }}" role="button" class="secondary">Back to Scoring</a>
+        <a href="{{ url_for('download_csv') }}" role="button">Download as CSV</a>
+
+        <table class="striped">
+            <thead>
+                <tr>
+                    <th>Contestant</th>
+                    <th>Rotation</th>
+                    {% for criterion in criteria %}
+                    <th>{{ criterion.name }}</th>
+                    {% endfor %}
+                    <th>Total Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in results %}
+                <tr>
+                    <td>{{ result.contestant }}</td>
+                    <td>{{ result.rotation }}</td>
+                    {% for criterion in criteria %}
+                    <td>{{ result[criterion.column_name] }}</td>
+                    {% endfor %}
+                    <td><strong>{{ result.total_score }}</strong></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </main>
+</body>
+</html>
+

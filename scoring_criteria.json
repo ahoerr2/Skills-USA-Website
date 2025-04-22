@@ -1,0 +1,102 @@
+{
+  "scoring_criteria": [
+    {
+      "name": "Drawing Interpretation",
+      "description": "Evaluation of technical skills, precision, and form",
+      "min_score": 0,
+      "max_score": 5,
+      "column_name": "drawing_interp"
+    },
+    {
+      "name": "Measurement Tools",
+      "description": "Assessment of creativity, musicality, and performance quality",
+      "min_score": 0,
+      "max_score": 5,
+      "column_name": "measure_tools"
+    },
+    {
+      "name": "Proper Hardware, Tubing, and Wire Usage",
+      "description": "Rating of routine complexity and challenging elements",
+      "min_score": 0,
+      "max_score": 5,
+      "column_name": "hardware_usage"
+    },
+    {
+      "name": "Adjust and Calibration of subsystems using interdisciplinary skills",
+      "description": "Evaluation of routine structure, flow, and choreography",
+      "min_score": 0,
+      "max_score": 5,
+      "column_name": "calibration"
+    },
+    {
+      "name": "Proper Safety Equipment Usage and Practice",
+      "description": "General impact of the performance on judges and audience",
+      "min_score": 0,
+      "max_score": 5,
+      "column_name": "safety_equip"
+    },
+    {
+      "name": "Usage of Multimeter",
+      "description": "Rating of routine complexity and challenging elements",
+      "min_score": 0,
+      "max_score": 5,
+      "column_name": "multimeter"
+    },
+    {
+      "name": "Installation, Adjustment and Troubleshooting of Pneumatic and Electro-Pneumatic Systems",
+      "description": "Evaluation of routine structure, flow, and choreography",
+      "min_score": 0,
+      "max_score": 5,
+      "column_name": "pneumatic_sys"
+    },
+    {
+      "name": "Identification of Component Faults",
+      "description": "General impact of the performance on judges and audience",
+      "min_score": 0,
+      "max_score": 5,
+      "column_name": "fault_id"
+    },
+    {
+      "name": "PLC Inputs and Outputs",
+      "description": "Rating of routine complexity and challenging elements",
+      "min_score": 0,
+      "max_score": 5,
+      "column_name": "plc_io"
+    },
+    {
+      "name": "Sequence of Events (SFC, Flowchart)",
+      "description": "Evaluation of routine structure, flow, and choreography",
+      "min_score": 0,
+      "max_score": 5,
+      "column_name": "sequence_events"
+    },
+    {
+      "name": "Creation of PLC Program",
+      "description": "General impact of the performance on judges and audience",
+      "min_score": 0,
+      "max_score": 5,
+      "column_name": "plc_program"
+    },
+    {
+      "name": "Robot Integration - Robot Installation",
+      "description": "Rating of routine complexity and challenging elements",
+      "min_score": 0,
+      "max_score": 5,
+      "column_name": "robot_install"
+    },
+    {
+      "name": "End Effectors",
+      "description": "Evaluation of routine structure, flow, and choreography",
+      "min_score": 0,
+      "max_score": 5,
+      "column_name": "end_effectors"
+    },
+    {
+      "name": "Robot Safety",
+      "description": "General impact of the performance on judges and audience",
+      "min_score": 0,
+      "max_score": 5,
+      "column_name": "robot_safety"
+    }
+  ]
+}

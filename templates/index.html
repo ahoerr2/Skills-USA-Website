@@ -1,0 +1,168 @@
+{% from "macros.html" import score_radio_group %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rotation Contest</title>
+  <!-- Pico.css from CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1.*/css/pico.min.css">
+  <style>
+    /* Caterpillar yellow accent */
+    [data-theme="light"],
+    :root:not([data-theme="dark"]) {
+      --primary: #fdd835;
+      --primary-hover: #fbc02d;
+      --primary-focus: rgba(253, 216, 53, 0.125);
+      --primary-inverse: rgba(0, 0, 0, 0.75);
+    }
+    @media only screen and (prefers-color-scheme: dark) {
+      :root:not([data-theme]) {
+        --primary: #fdd835;
+        --primary-hover: #ffeb3b;
+        --primary-focus: rgba(253, 216, 53, 0.25);
+        --primary-inverse: rgba(0, 0, 0, 0.75);
+      }
+    }
+    [data-theme="dark"] {
+      --primary: #fdd835;
+      --primary-hover: #ffeb3b;
+      --primary-focus: rgba(253, 216, 53, 0.25);
+      --primary-inverse: rgba(0, 0, 0, 0.75);
+    }
+    :root {
+      --form-element-active-border-color: var(--primary);
+      --form-element-focus-color: var(--primary-focus);
+      --switch-color: var(--primary-inverse);
+      --switch-checked-background-color: var(--primary);
+    }
+    /* Row transitions */
+    .contest-row {
+      transition: opacity 0.3s ease, max-height 0.3s ease, grid-template-columns 0.3s ease;
+      overflow: hidden;
+    }
+    .contest-row.hidden {
+      opacity: 0;
+      max-height: 0;
+      padding: 0;
+      margin: 0;
+    }
+    /* Results styling */
+    #results {
+      margin-top: 1rem;
+    }
+    nav a {
+      font-weight: bold;
+      font-size: 1.25rem;
+    }
+  </style>
+</head>
+<body>
+  <nav class="container">
+    <ul>
+      <li><a href="/">Skills USA</a></li>
+    </ul>
+  </nav>
+  <main class="container">
+    <h1>Enter Contestant Data</h1>
+    {% if station_num != "-1" %}
+    <h3>Station: {{ station_num }}</h3>
+    <form method="POST" action="" id="contest-form">
+      <input type="hidden" name="station" value="{{ station_num }}" />
+      <div id="contestants">
+        <div class="grid contest-row" style="align-items: end; gap: 1rem;">
+          <div>
+            <label for="contestant-1">Contestant #</label>
+            <input type="text" id="contestant-1" name="contestant" value="123456" />
+          </div>
+          <div>
+            <label for="rotation-1">Rotation #</label>
+            <input type="number" id="rotation-1" name="rotation" value="123456" />
+          </div>
+        </div>
+        {% for criterion in criteria %}
+            <fieldset>
+                <legend>{{ criterion.name }}</legend>
+                <span class="score-description">{{ criterion.description }}</span>
+                <br>
+
+                {% for score in range(criterion.min_score, criterion.max_score + 1) %}
+                <input type="radio" 
+                       id="{{ criterion.column_name }}_{{ score }}" 
+                       name="{{ criterion.column_name }}" 
+                       value="{{ score }}" 
+                       required />
+                <label for="{{ criterion.column_name }}_{{ score }}">{{ score }}</label>
+                {% endfor %}
+            </fieldset>
+        {% endfor %}
+      </div>
+      <button type="submit" style="width: 100%; margin-top: 0.5rem;">Submit</button>
+    </form>
+    {% else %}
+    <h3>Invalid Station Code Provided: {{ station_num }} <br><br> Please Contact Staff.</h3>
+    {% endif %}
+
+    <section id="results"></section>
+  </main>
+  <script>
+    let count = 1;
+    const contestantsDiv = document.getElementById('contestants');
+
+    function updateRemoveButtons() {
+      const rows = Array.from(document.querySelectorAll('.contest-row'));
+      rows.forEach(row => {
+        const removeCell = row.querySelector('.remove-cell');
+        if (rows.length <= 1) {
+          if (removeCell) removeCell.remove();
+          row.style.gridTemplateColumns = 'repeat(3, 1fr)';
+        } else {
+          if (!removeCell) {
+            const div = document.createElement('div');
+            div.className = 'remove-cell';
+            div.innerHTML = '<button type="button" class="remove-btn secondary small">Remove</button>';
+            row.appendChild(div);
+          }
+          row.style.gridTemplateColumns = 'repeat(4, 1fr)';
+        }
+      });
+    }
+
+    document.getElementById('add-btn').addEventListener('click', () => {
+      count++;
+      const row = document.createElement('div');
+      row.className = 'grid contest-row hidden';
+      row.style.alignItems = 'end';
+      row.style.gap = '1rem';
+      row.innerHTML = `
+        <div>
+          <label for="contestant-${count}">Contestant #</label>
+          <input type="text" id="contestant-${count}" name="contestant" value="123456" />
+        </div>
+        <div>
+          <label for="rotation-${count}">Rotation #</label>
+          <input type="number" id="rotation-${count}" name="rotation" value="123456" />
+        </div>
+        <div>
+          <label for="score-${count}">Score</label>
+          <input type="number" id="score-${count}" name="score" value="0" />
+        </div>
+      `;
+      contestantsDiv.appendChild(row);
+      requestAnimationFrame(() => row.classList.remove('hidden'));
+      updateRemoveButtons();
+    });
+
+    contestantsDiv.addEventListener('click', e => {
+      if (e.target.classList.contains('remove-btn')) {
+        const row = e.target.closest('.contest-row');
+        row.classList.add('hidden');
+        setTimeout(() => {
+          row.remove();
+          updateRemoveButtons();
+        }, 300);
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', updateRemoveButtons);
+  </script>

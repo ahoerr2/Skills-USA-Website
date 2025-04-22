@@ -1,0 +1,20 @@
+{% macro score_radio_group(criterion) %}
+<div class="score-group">
+  <div class="score-header">
+    <label class="score-name">{{ criterion.name }}</label>
+    <span class="score-description">{{ criterion.description }}</span>
+  </div>
+  <div class="radio-group">
+    {% for score in range(criterion.min_score, criterion.max_score + 1) %}
+      <div class="radio-option">
+        <input type="radio" 
+               id="{{ criterion.column_name }}_{{ score }}" 
+               name="{{ criterion.column_name }}" 
+               value="{{ score }}" 
+               required>
+        <label for="{{ criterion.column_name }}_{{ score }}">{{ score }}</label>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endmacro %}
