@@ -7,3 +7,6 @@ requires-python = ">=3.12"
 dependencies = [
     "flask>=3.1.0",
 ]
+
+[tool.nixpacks]
+start = "gunicorn -b 0.0.0.0:3000 app:app"
