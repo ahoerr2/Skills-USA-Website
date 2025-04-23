@@ -68,7 +68,7 @@
     {% if station_num != "-1" %}
     <h3>Station: {{ station_num }}</h3>
     <form method="POST" action="" id="contest-form">
-      <input type="hidden" name="station" value="{{ station_num }}" />
+      <input type="hidden" name="station_num" value="{{ station_num }}">
       <div id="contestants">
         <div class="grid contest-row" style="align-items: end; gap: 1rem;">
           <div>
@@ -79,23 +79,11 @@
             <label for="rotation-1">Rotation #</label>
             <input type="number" id="rotation-1" name="rotation" value="123456" />
           </div>
+          <div>
+            <label for="score-1">Score</label>
+            <input type="number" id="score-1" name="score" value="0" />
+          </div>
         </div>
-        {% for criterion in criteria %}
-            <fieldset>
-                <legend>{{ criterion.name }}</legend>
-                <span class="score-description">{{ criterion.description }}</span>
-                <br>
-
-                {% for score in range(criterion.min_score, criterion.max_score + 1) %}
-                <input type="radio" 
-                       id="{{ criterion.column_name }}_{{ score }}" 
-                       name="{{ criterion.column_name }}" 
-                       value="{{ score }}" 
-                       required />
-                <label for="{{ criterion.column_name }}_{{ score }}">{{ score }}</label>
-                {% endfor %}
-            </fieldset>
-        {% endfor %}
       </div>
       <button type="submit" style="width: 100%; margin-top: 0.5rem;">Submit</button>
     </form>

@@ -1,6 +1,5 @@
 import csv
 import io
-import json
 import sqlite3
 
 from flask import Flask, redirect, render_template, request, send_file, url_for
@@ -9,33 +8,19 @@ app = Flask(__name__)
 DB_PATH = "scoring.db"
 
 
-def load_scoring_criteria():
-    with open("scoring_criteria.json", "r") as file:
-        return json.load(file)
-
-
 def init_db():
     with app.app_context():
         conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
-
-        # Create scores table with dynamic columns based on scoring criteria
-        criteria = load_scoring_criteria()
 
         # Start with base columns
         columns = [
             "id INTEGER PRIMARY KEY AUTOINCREMENT",
             "contestant TEXT NOT NULL",
             "rotation INTEGER NOT NULL",
+            "station INTEGER NOT NULL",
+            "score INTEGER NOT NULL",
         ]
-
-        # Add a column for each scoring criterion
-        for criterion in criteria["scoring_criteria"]:
-            column_name = criterion["column_name"]
-            columns.append(f"{column_name} INTEGER")
-
-        # Add total score column
-        columns.append("total_score INTEGER")
 
         # Create the table
         c.execute(f"""
@@ -58,32 +43,22 @@ init_db()
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    station_num = -1
-    criteria = load_scoring_criteria()
+    station_num = "-1"
 
     if request.method == "POST":
         contestant = request.form.get("contestant")
         rotation = request.form.get("rotation")
-
-        # Collect scores from form
-        scores = {}
-        total_score = 0
-
-        for criterion in criteria["scoring_criteria"]:
-            column_name = criterion["column_name"]
-            if column_name in request.form:
-                score = int(request.form[column_name])
-                scores[column_name] = score
-                total_score += score
+        station = request.form.get("station_num")
+        score = request.form.get("score")
 
         # Insert into database
         conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
 
         # Build the SQL query dynamically
-        columns = ["contestant", "rotation"] + list(scores.keys()) + ["total_score"]
+        columns = ["contestant", "rotation", "station", "score"]
         placeholders = ["?"] * (len(columns))
-        values = [contestant, rotation] + list(scores.values()) + [total_score]
+        values = [contestant, rotation, station, score]
 
         query = f"INSERT INTO scores ({', '.join(columns)}) VALUES ({', '.join(placeholders)})"
         c.execute(query, values)
@@ -91,15 +66,13 @@ def index():
         conn.commit()
         conn.close()
 
-        return redirect(url_for("index"))
+        return redirect(url_for("index", station=station))
     # For GET requests with query parameter
     elif request.method == "GET" and "station" in request.args:
-        station_num = request.args.get("station", -1)
+        station_num = request.args.get("station", "-1")
 
     print(f"Station Num: {station_num}")
-    return render_template(
-        "index.html", station_num=station_num, criteria=criteria["scoring_criteria"]
-    )
+    return render_template("index.html", station_num=station_num)
 
 
 @app.route("/stations")
@@ -116,15 +89,12 @@ def results():
 
     c.execute("""
         SELECT * FROM scores
-        ORDER BY total_score DESC
+        ORDER BY contestant DESC
     """)
 
     results = c.fetchall()
-    criteria = load_scoring_criteria()
 
-    return render_template(
-        "results.html", results=results, criteria=criteria["scoring_criteria"]
-    )
+    return render_template("results.html", results=results)
 
 
 @app.route("/download-csv")
@@ -133,28 +103,25 @@ def download_csv():
     conn.row_factory = sqlite3.Row
     c = conn.cursor()
 
-    c.execute("SELECT * FROM scores ORDER BY total_score DESC")
+    c.execute("SELECT * FROM scores ORDER BY contestant DESC")
     results = c.fetchall()
-
-    criteria = load_scoring_criteria()
 
     # Create a CSV in memory
     output = io.StringIO()
     writer = csv.writer(output)
 
     # Write header row
-    header = ["Contestant", "Rotation"]
-    for criterion in criteria["scoring_criteria"]:
-        header.append(criterion["name"])
-    header.append("Total Score")
+    header = ["Contestant", "Rotation", "Station", "Score"]
     writer.writerow(header)
 
     # Write data rows
     for result in results:
-        row = [result["contestant"], result["rotation"]]
-        for criterion in criteria["scoring_criteria"]:
-            row.append(result[criterion["column_name"]])
-        row.append(result["total_score"])
+        row = [
+            result["contestant"],
+            result["rotation"],
+            result["station"],
+            result["score"],
+        ]
         writer.writerow(row)
 
     # Prepare the output for download

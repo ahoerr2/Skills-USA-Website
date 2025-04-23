@@ -78,10 +78,8 @@
                 <tr>
                     <th>Contestant</th>
                     <th>Rotation</th>
-                    {% for criterion in criteria %}
-                    <th>{{ criterion.name }}</th>
-                    {% endfor %}
-                    <th>Total Score</th>
+                    <th>Station</th>
+                    <th>Score</th>
                 </tr>
             </thead>
             <tbody>
@@ -89,10 +87,8 @@
                 <tr>
                     <td>{{ result.contestant }}</td>
                     <td>{{ result.rotation }}</td>
-                    {% for criterion in criteria %}
-                    <td>{{ result[criterion.column_name] }}</td>
-                    {% endfor %}
-                    <td><strong>{{ result.total_score }}</strong></td>
+                    <td>{{ result.station }}</td>
+                    <td><strong>{{ result.score }}</strong></td>
                 </tr>
                 {% endfor %}
             </tbody>
